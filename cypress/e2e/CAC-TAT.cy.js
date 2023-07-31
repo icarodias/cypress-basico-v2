@@ -173,6 +173,6 @@ describe('Central de Atendimento ao Cliente TAT', () => {
       .invoke('removeAttr', 'target')
       .click()
 
-    cy.url().should('have.text', '/src/privacy.html')
+    cy.contains('Talking About Testing')
   })
 })
