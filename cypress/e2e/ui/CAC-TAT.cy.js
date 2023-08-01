@@ -15,23 +15,23 @@ describe('Central de Atendimento ao Cliente TAT', () => {
     cy.get('#title').should('have.text', 'CAC TAT')
   })
 
-  Cypress._.times(4, () => it.only('Preenche todos os campos obrigatórios e envia o formulário', () => {
+  Cypress._.times(4, () => it('Preenche todos os campos obrigatórios e envia o formulário', () => {
       //Given
       const messageLong = Cypress._.repeat('abcdefghi ', 10)
-    
+
       cy.clock()                         
-    
+
       //When
       cy.get('#firstName').type('Icaro')
       cy.get('#lastName').type('Dias')
       cy.get('#email').type('icaro@qa.test')
       cy.get('#open-text-area').type(messageLong,{delay:0})
       cy.contains('button', 'Enviar').click()
-    
+
       //Then
       cy.get('.success').should('be.visible')
       cy.get('.success').should('contain.text', 'Mensagem enviada com sucesso.')
-    
+
       cy.tick(THREE_SECONDS_IN_MILISECONDS)
       cy.get('.success').should('not.be.visible')
     })
@@ -202,4 +202,32 @@ describe('Central de Atendimento ao Cliente TAT', () => {
 
     cy.contains('Talking About Testing')
   })
+
+  it('Exibe e esconde as mensagem de sucesso e erro usando .invoke', () => {
+    cy.get('.success')
+      .should('not.be.visible')
+      .invoke('show')
+      .should('be.visible')
+      .and('contain', 'Mensagem enviada com sucesso.')
+      .invoke('hide')
+      .should('not.be.visible')
+    
+    cy.get('.error')
+      .should('not.be.visible')
+      .invoke('show')
+      .should('be.visible')
+      .and('contain', 'Valide os campos obrigatórios!')
+      .invoke('hide')
+      .should('not.be.visible')
+  })
+
+
+  it('Preenche area de texto usando .invoke', () =>{
+      const longText = Cypress._.repeat('0123456789', 20)
+
+      cy.get('#open-text-area')
+        .invoke('val', longText)
+        .should('have.value', longText)
+  })
+
 })
