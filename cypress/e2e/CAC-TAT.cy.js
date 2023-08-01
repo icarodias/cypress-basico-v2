@@ -2,6 +2,8 @@
 
 describe('Central de Atendimento ao Cliente TAT', () => {
 
+  const THREE_SECONDS_IN_MILISECONDS = 3000;
+
   beforeEach(() =>{
     //Given
     cy.visit('../../src/index.html')
@@ -13,24 +15,31 @@ describe('Central de Atendimento ao Cliente TAT', () => {
     cy.get('#title').should('have.text', 'CAC TAT')
   })
 
-  it('Preenche todos os campos obrigatórios e envia o formulário', () => {
-    //Given
-    const messageLong = `abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi 
-                         abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi `
-
-    //When
-    cy.get('#firstName').type('Icaro')
-    cy.get('#lastName').type('Dias')
-    cy.get('#email').type('icaro@qa.test')
-    cy.get('#open-text-area').type(messageLong,{delay:0})
-    cy.contains('button', 'Enviar').click()
-
-    //Then
-    cy.get('.success').should('be.visible')
-    cy.get('.success').should('contain.text', 'Mensagem enviada com sucesso.')
-  })
+  Cypress._.times(4, () => it.only('Preenche todos os campos obrigatórios e envia o formulário', () => {
+      //Given
+      const messageLong = Cypress._.repeat('abcdefghi ', 10)
+    
+      cy.clock()                         
+    
+      //When
+      cy.get('#firstName').type('Icaro')
+      cy.get('#lastName').type('Dias')
+      cy.get('#email').type('icaro@qa.test')
+      cy.get('#open-text-area').type(messageLong,{delay:0})
+      cy.contains('button', 'Enviar').click()
+    
+      //Then
+      cy.get('.success').should('be.visible')
+      cy.get('.success').should('contain.text', 'Mensagem enviada com sucesso.')
+    
+      cy.tick(THREE_SECONDS_IN_MILISECONDS)
+      cy.get('.success').should('not.be.visible')
+    })
+  )
 
   it('Exibe mensagem de erro ao submeter o formulário com um email com formatação inválida', () => {
+    cy.clock()
+    
     //When
     cy.get('#firstName').type('Icaro')
     cy.get('#lastName').type('Dias')
@@ -42,6 +51,9 @@ describe('Central de Atendimento ao Cliente TAT', () => {
     //Then
     cy.get('.error').should('be.visible')
     cy.get('.error').should('contain.text', 'Valide os campos obrigatórios!')
+
+    cy.tick(THREE_SECONDS_IN_MILISECONDS)
+    cy.get('.error').should('not.be.visible')
     
   })
 
@@ -55,6 +67,8 @@ describe('Central de Atendimento ao Cliente TAT', () => {
   })
 
   it('Exibe mensagem de erro quando o telefone se torna obrigatório e não é preenchido antes do envio do formulário',() => {
+    cy.clock()
+     
     //When
     cy.get('#firstName').type('Icaro')
     cy.get('#lastName').type('Dias')
@@ -68,25 +82,38 @@ describe('Central de Atendimento ao Cliente TAT', () => {
     //Then
     cy.get('.error').should('be.visible')
     cy.get('.error').should('contain.text', 'Valide os campos obrigatórios!')
+
+    cy.tick(THREE_SECONDS_IN_MILISECONDS)
+    cy.get('.error').should('not.be.visible')
   })
 
   it('Exibe mensagem de erro ao submeter o formulário sem preencher os campos obrigatórios', () => {
+    cy.clock()
+
     //When
     cy.contains('button', 'Enviar').click()
     
     //Then
     cy.get('.error').should('be.visible')
     cy.get('.error').should('contain.text', 'Valide os campos obrigatórios!')
+
+    cy.tick(THREE_SECONDS_IN_MILISECONDS)
+    cy.get('.error').should('not.be.visible')
   })
 
 
   it('Envia formulário usando comando customizado', () => {
+    cy.clock()
+    
     //When
     cy.fillMandatoryFieldsAndSubmit()
 
     //Then
     cy.get('.success').should('be.visible')
     cy.get('.success').should('contain.text', 'Mensagem enviada com sucesso.')
+
+    cy.tick(THREE_SECONDS_IN_MILISECONDS)
+    cy.get('.success').should('not.be.visible')
   })
 
 
